@@ -1,5 +1,9 @@
 <div class="container">
 	<h1>Dashboard for <%= current_user.email %></h1>
-
 	<p>Blah blah blah signed in stuff.</p>
+	<% if current_user.chef %>
+		<form action="/new_meal/new" method="GET">
+			<input type="submit" name="New Menu Item" value="New Menu Item">
+		</form>
+	<% end %>
 </div>

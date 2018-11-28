@@ -13,10 +13,17 @@ require_relative "authentication.rb"
 # if the user is signed in, current_user will refer to the signed in user object.
 # if they are not signed in, current_user will be nil
 
+if ENV['DATABASE_URL']
+  DataMapper::setup(:default, ENV['DATABASE_URL'] || 'postgres://localhost/mydb')
+else
+  DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/app.db")
+end
+
 class MenuEntry
 	include DataMapper::Resource
-	property :cook_id, Serial
-	property :meal_id, Integer
+	property :id, Serial
+	property :cook_id, Integer
+	# property :meal_id, Integer
 	property :meal_title, Text
 	property :meal_description, Text
 	property :price, Integer 
@@ -25,9 +32,9 @@ end
 
 class CustomerOrder
 	include DataMapper::Resource
-	property :order_id, Serial
-	property :user_id, Serial
-	property :chef_id, Serial
+	property :id, Serial
+	property :user_id, Integer
+	property :chef_id, Integer
 	property :description, Text
 	property :created_at, DateTime
 end
@@ -57,7 +64,8 @@ def chef_only!
 end
 
 DataMapper.finalize
-User.auto_upgrade!
+MenuEntry.auto_upgrade!
+# CustomerOrder.auto_upgrade!
 
 #make an admin user if one doesn't exist!
 if User.all(administrator: true).count == 0
@@ -73,14 +81,14 @@ post "/new_meal/create" do
 	chef_only!
 	if params["title"] && params["description"]
 		m = MenuEntry.new
-		m.cook_id = current_user.chef_id
+		m.cook_id = current_user.id
 		m.meal_title = params["title"]
 		m.meal_description = params["description"]
-		m.meal_id = params["meal_id"]
+		# m.meal_id = params["meal_id"]
 		m.price = params["price"]
 		m.time = params["time"]
 		m.save
-		return "Successfully added new menu item: #{m.title}"
+		return "Successfully added new menu item: #{m.meal_title}"
 	else
 		return "Missing Information"
 	end
