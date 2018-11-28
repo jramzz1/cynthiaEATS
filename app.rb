@@ -1,0 +1,102 @@
+require "sinatra"
+require 'data_mapper'
+#require 'stripe'
+require 'sinatra/flash'
+require_relative "authentication.rb"
+
+#the following urls are included in authentication.rb
+# GET /login
+# GET /logout
+# GET /sign_up
+
+# authenticate! will make sure that the user is signed in, if they are not they will be redirected to the login page
+# if the user is signed in, current_user will refer to the signed in user object.
+# if they are not signed in, current_user will be nil
+
+class MenuEntry
+	include DataMapper::Resource
+	property :cook_id, Serial
+	property :meal_id, Integer
+	property :meal_title, Text
+	property :meal_description, Text
+	property :price, Integer 
+	property :time, Integer
+end
+
+class CustomerOrder
+	include DataMapper::Resource
+	property :order_id, Serial
+	property :user_id, Serial
+	property :chef_id, Serial
+	property :description, Text
+	property :created_at, DateTime
+end
+
+def admin_only!
+	if !current_user || !current_user.administrator
+		redirect "/"
+	end
+end
+
+def pro_only!
+	if !current_user || !current_user.pro || !current_user.administrator
+		redirect "/"
+	end
+end
+
+def reg_only!
+	if !current_user || current_user.pro || current_user.administrator
+		redirect "/"
+	end
+end
+
+def chef_only!
+	if !current_user || !current_user.chef
+		redirect "/"
+	end
+end
+
+DataMapper.finalize
+User.auto_upgrade!
+
+#make an admin user if one doesn't exist!
+if User.all(administrator: true).count == 0
+	u = User.new
+	u.email = "admin@admin.com"
+	u.password = "admin"
+	u.administrator = true
+	u.save
+end
+
+post "/new_meal/create" do
+	authenticate!
+	chef_only!
+	if params["title"] && params["description"]
+		m = MenuEntry.new
+		m.cook_id = current_user.chef_id
+		m.meal_title = params["title"]
+		m.meal_description = params["description"]
+		m.meal_id = params["meal_id"]
+		m.price = params["price"]
+		m.time = params["time"]
+		m.save
+		return "Successfully added new menu item: #{m.title}"
+	else
+		return "Missing Information"
+	end
+end
+
+get "/new_meal/new" do
+	authenticate!
+	chef_only!
+	erb :new_meal
+end
+
+get "/" do
+	erb :index
+end
+
+get "/dashboard" do
+	authenticate!
+	erb :dashboard
+end

@@ -1,0 +1,24 @@
+/* remove rounding from cards, buttons and inputs */
+.card, .btn, .form-control { border-radius: 0; }
+
+body {
+/*background: url('/images/back.jpg') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+
+  -webkit-background-filter: blur(5px);
+  -moz-background-filter: blur(5px);
+  -o-background-filter: blur(5px);
+  -ms-background-filter: blur(5px);
+  background-filter: blur(5px);*/
+}
+
+.jumbotron {
+	background-image: linear-gradient(#ADF0FE, white);
+}
+
+.col-md-4 {
+	background-image: linear-gradient(#ADF0FE, white);
+}
