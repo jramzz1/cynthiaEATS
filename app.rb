@@ -23,7 +23,6 @@ class MenuEntry
 	include DataMapper::Resource
 	property :id, Serial
 	property :cook_id, Integer
-	# property :meal_id, Integer
 	property :meal_title, Text
 	property :meal_description, Text
 	property :price, Integer 
@@ -65,7 +64,7 @@ end
 
 DataMapper.finalize
 MenuEntry.auto_upgrade!
-# CustomerOrder.auto_upgrade!
+CustomerOrder.auto_upgrade!
 
 #make an admin user if one doesn't exist!
 if User.all(administrator: true).count == 0
@@ -84,13 +83,14 @@ post "/new_meal/create" do
 		m.cook_id = current_user.id
 		m.meal_title = params["title"]
 		m.meal_description = params["description"]
-		# m.meal_id = params["meal_id"]
 		m.price = params["price"]
 		m.time = params["time"]
 		m.save
-		return "Successfully added new menu item: #{m.meal_title}"
+		flash[:success] = "Success: You added a new item to your menu."
+		redirect "/dashboard"
 	else
-		return "Missing Information"
+		flash[:error] = "Error: Missing Information."
+		redirect "/new_meal/new"
 	end
 end
 
@@ -100,11 +100,30 @@ get "/new_meal/new" do
 	erb :new_meal
 end
 
+post '/delete/menu_item' do
+	authenticate!
+	chef_only!
+	item = MenuEntry.get(params["id"])
+	item.destroy if item != nil
+	flash[:success] = "Success: Item Deleted."
+	redirect "/dashboard"
+end
+
+# post "/new_order/create" do
+# 	authenticate!
+# end
+
+# get "/order/new" do
+# 	authenticate!
+# 	erb :new_order
+# end
+
 get "/" do
 	erb :index
 end
 
 get "/dashboard" do
 	authenticate!
+	@menus = MenuEntry.all
 	erb :dashboard
 end

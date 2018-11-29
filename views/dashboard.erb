@@ -1,9 +1,30 @@
 <div class="container">
-	<h1>Dashboard for <%= current_user.email %></h1>
-	<p>Blah blah blah signed in stuff.</p>
+	<h1><%= current_user.username %>'s Profile</h1></br>
+	<div class="container">
+	  <% @menus.each do |v| %>
+		  <% if v.cook_id == current_user.id %>
+			  <h2><%= v.id %>. <%= v.meal_title %></h2>
+			  <p>description: <%= v.meal_description %></p>
+			  <p>price: $<%= v.price %></p>
+			  <p>time to prepare: <%= v.time %> minutes</p>
+			  <form action="/delete/menu_item" method="POST">
+				<input type="submit" name="Delete Item" value="Delete Item">
+				<input type="hidden" name="id" value=<%= v.id %>>
+			  </form></br>
+		  <% end %>
+	  <% end %>
+	</div>
 	<% if current_user.chef %>
 		<form action="/new_meal/new" method="GET">
 			<input type="submit" name="New Menu Item" value="New Menu Item">
 		</form>
+	<% end %>
+	<% @menus.each do |v| %>
+		<% if v.id == current_user.lastorder || v.id == current_user.lastorder2 || v.id == current_user.lastorder3 %>
+			  <h2><%= v.id %>. <%= v.meal_title %></h2>
+			  <p>description: <%= v.meal_description %></p>
+			  <p>price: $<%= v.price %></p>
+			  <p>time to prepare: <%= v.time %> minutes</p></br>
+		 <% end %>
 	<% end %>
 </div>

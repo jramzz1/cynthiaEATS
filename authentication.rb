@@ -37,11 +37,13 @@ end
 post "/register" do
 	email = params[:email]
 	password = params[:password]
+	username = params[:username]
 	chef = params[:chef]
 
 	u = User.new
 	u.email = email.downcase
-	u.password =  password
+	u.password = password
+	u.username = username
 	if params["chef"] == "on"
 			u.chef = true
 		end

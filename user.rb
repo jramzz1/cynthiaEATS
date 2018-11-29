@@ -14,8 +14,10 @@ class User
     property :id, Serial
     property :email, String
     property :password, String
-    property :favorite_food, String
-    property :created_at, DateTime
+    property :username, String
+    property :lastorder, Integer
+    property :lastorder2, Integer
+    property :lastorder3, Integer
     property :administrator, Boolean, :default => false
     property :pro, Boolean, :default => false
     property :chef, Boolean, :default => false
@@ -23,22 +25,6 @@ class User
     def login(password)
     	return self.password == password
     end
-
-    # def free
-    #     return self.pro == false
-    # end
-
-    # def chef
-    #     return self.chef == false
-    # end
-
-    # def pro
-    #     return self.pro == true
-    # end
-
-    # def administrator
-    #     return self.administrator == true
-    # end
 end
 
 # Perform basic sanity checks and initialize all relationships
