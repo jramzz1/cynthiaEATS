@@ -1,0 +1,6 @@
+<% @menu.each do |m| %>
+	<h2><%= m.id %>. <%= m.meal_title %></h2>
+	<p>description: <%= m.meal_description %></p>
+	<p>price: $<%= m.price %></p>
+	<p>time to prepare: <%= m.time %> minutes</p>
+<% end %>

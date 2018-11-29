@@ -1,0 +1,7 @@
+<% @chefs.each do |c| %>
+	<h1><%= c.username %></h1>
+	<form action="/chef/menu" method="GET">
+		<input type="submit" name="chef" value="<%= c.username %>'s menu >>">
+		<input type="hidden" name="id" value=<%= c.id %>>
+	</form></br>
+<% end %>

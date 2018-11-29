@@ -115,8 +115,22 @@ end
 
 # get "/order/new" do
 # 	authenticate!
+# 	@chefs = User.all(chef: true)
+# 	@menus = MenuEntry.all
 # 	erb :new_order
 # end
+
+get "/chefs" do
+	authenticate!
+	@chefs = User.all(chef: true)
+	erb :display_chefs
+end
+
+get "/chef/menu" do
+	authenticate!
+	@menu = MenuEntry.all(cook_id:params["id"])
+	erb :display_menu
+end
 
 get "/" do
 	erb :index
@@ -126,4 +140,8 @@ get "/dashboard" do
 	authenticate!
 	@menus = MenuEntry.all
 	erb :dashboard
+end
+
+get "/about-us" do
+	erb :about
 end
