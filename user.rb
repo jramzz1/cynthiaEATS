@@ -15,9 +15,13 @@ class User
     property :email, String
     property :password, String
     property :username, String
-    property :lastorder, Integer
-    property :lastorder2, Integer
-    property :lastorder3, Integer
+    property :rating1, Integer, :default => 0
+    property :rating2, Integer, :default => 0
+    property :rating3, Integer, :default => 0
+    property :rating4, Integer, :default => 0
+    property :rating5, Integer, :default => 0
+    property :rating_overall, Integer, :default => 0
+    property :total_ratings, Integer, :default => 0
     property :administrator, Boolean, :default => false
     property :pro, Boolean, :default => false
     property :chef, Boolean, :default => false

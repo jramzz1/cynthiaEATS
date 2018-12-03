@@ -1,8 +1,16 @@
-<form action="/new_meal/create" method="POST">
-	Create a new dish for <%= current_user.email %></br></br>
-	Title: <input type="text" name="title"></br>
-	Description: <textarea name="description" cols="50" rows="10"></textarea></br>
-	Price: <input type="number" step="any" name="price"></br></br>
-	Time: <input type="number" name="time"> minutes</br></br>
-	<input type="submit" name="Submit">
-</form>
+	<div class="jumbotron">
+		<div class="new_menu">
+			<form action="/new_meal/create" method="POST">
+				<h2 style="font-size:20px">Create a new menu entry for <%= current_user.username %></h2>
+				Title:</br>
+				<input type="text" name="title"></br>
+				Description:</br>
+				<textarea name="description" cols="43" rows="5"></textarea></br>
+				Price:</br>
+				<input type="number" step="any" name="price"></br>
+				Time:</br>
+				<input type="number" name="time"> minutes</br></br>
+				<input type="submit" name="Submit" class="btn btn-secondary" role="button">
+			</form>
+		</div>
+	</div>

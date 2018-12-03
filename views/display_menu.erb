@@ -1,6 +1,26 @@
-<% @menu.each do |m| %>
-	<h2><%= m.id %>. <%= m.meal_title %></h2>
-	<p>description: <%= m.meal_description %></p>
-	<p>price: $<%= m.price %></p>
-	<p>time to prepare: <%= m.time %> minutes</p>
-<% end %>
+<div class="jumbotron">
+	<div class="container">
+		<h2 style="font-size:24px; text-align: center"><%= @chef %>'s Menu</h2>
+		<% @menu.each do |m| %>
+		<hr width="50%" size="8" align="left">
+			<h2 style="font-size:20px"><%= m.meal_title %></h2>
+			<p>Rating: <%= m.rating_overall %> Stars</br>
+			Rated by <%= m.total_ratings %> Customers</p>
+			<p style="font-size:14px">Description: <%= m.meal_description %></br>
+			Price: $<%= m.price %></br>
+			Time to prepare: <%= m.time %> minutes</p>
+			<form action="/new_order/create" method="POST">
+				<p style="font-size:14px">Delivery: <input type="checkbox" name="Delivery"></br>
+				Carry Out: <input type="checkbox" name="Carry Out"></p>
+				<input type="hidden" name="plate_id" value= "<%= m.id %>">
+				<input type="hidden" name="plate_title" value= "<%= m.meal_title %>">
+				<input type="hidden" name="plate_description" value= "<%= m.meal_description %>">
+				<input type="hidden" name="plate_price" value= "<%= m.price %>">
+				<input type="hidden" name="plate_time" value= "<%= m.time %>">
+				<input type="hidden" name="chef_id" value= "<%= m.cook_id %>">
+				<input type="hidden" name="customer_id" value= "<%= current_user.id %>">
+				<input type="submit" name="Order" value="Order" class="btn btn-secondary" role="button">
+			</form></br>
+		<% end %>
+	</div>
+</div>

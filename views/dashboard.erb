@@ -1,30 +1,100 @@
-<div class="container">
-	<h1><%= current_user.username %>'s Profile</h1></br>
-	<div class="container">
-	  <% @menus.each do |v| %>
-		  <% if v.cook_id == current_user.id %>
-			  <h2><%= v.id %>. <%= v.meal_title %></h2>
-			  <p>description: <%= v.meal_description %></p>
-			  <p>price: $<%= v.price %></p>
-			  <p>time to prepare: <%= v.time %> minutes</p>
-			  <form action="/delete/menu_item" method="POST">
-				<input type="submit" name="Delete Item" value="Delete Item">
-				<input type="hidden" name="id" value=<%= v.id %>>
-			  </form></br>
-		  <% end %>
-	  <% end %>
-	</div>
 	<% if current_user.chef %>
-		<form action="/new_meal/new" method="GET">
-			<input type="submit" name="New Menu Item" value="New Menu Item">
-		</form>
+		<div class="jumbotron">
+		<div class="container">
+			<div class="header" style="text-align: center">
+				<h1 style="font-size:24px"><%= current_user.username %>'s Menu Items</h1></br>
+			</div>
+			<% @menus.each do |v| %>
+				<% if v.cook_id == current_user.id %>
+					<hr width="50%" size="8" align="left">
+					<h2 style="font-size:20px"><%= v.meal_title %></h2>
+					<p style="font-size:14px"><b>Description:</b> <%= v.meal_description %></br>
+					<b>Price:</b> $<%= v.price %></br>
+					<b>Time to Prepare:</b> <%= v.time %> minutes</p>
+					<form action="/delete/menu_item" method="POST">
+						<input type="submit" name="Delete Item" value="Delete Item" class="btn btn-secondary" role="button">
+						<input type="hidden" name="id" value=<%= v.id %>>
+					</form></br>
+				<% end %>
+			<% end %>
+			<div class="new_menu_button">
+				<form action="/new_meal/new" method="GET">
+					<p align="right">
+						<input type="submit" name="New Menu Item" value="New Menu Item" class="btn btn-secondary" role="button">
+					</p>
+				</form>
+			</div>
+		</div>
+		</div>
 	<% end %>
-	<% @menus.each do |v| %>
-		<% if v.id == current_user.lastorder || v.id == current_user.lastorder2 || v.id == current_user.lastorder3 %>
-			  <h2><%= v.id %>. <%= v.meal_title %></h2>
-			  <p>description: <%= v.meal_description %></p>
-			  <p>price: $<%= v.price %></p>
-			  <p>time to prepare: <%= v.time %> minutes</p></br>
-		 <% end %>
-	<% end %>
-</div>
+
+	<div class="jumbotron">
+	<div class="container">
+	  	<div class="header" style="text-align: center">
+	  		<h1 style="font-size:24px"><%= current_user.username %>'s Recent Orders</h1></br>
+	  	</div>
+			<% @orders.each do |o| %>
+			<div class="each-order">
+				<% if o.user_id == current_user.id %>
+					<div class="single-order" style="margin-top:10px">
+						<h2 style="font-size:20px">Order no. #<%= o.id %></br>
+						Plate Ordered: <%= o.plate_title %></h2>
+						<p style="font-size:14px"><b>Description:</b> <%= o.plate_description %></br>
+						<b>Price:</b> $<%= o.plate_price %></br>
+						<b>Time to prepare:</b> <%= o.plate_time %> minutes</br>
+						<% @chefs.each do |c| %>
+							<% if o.chef_id == c.id %>
+								<b>Chef:</b> <%= c.username %></br>
+							<% end %>
+						<% end %>
+						<% if o.delivery %>
+							<b>Delivery</b>
+						<% else %>
+							<b>Carry Out</b>
+						<% end %></p>
+						<div class="order-again">
+							<form action="/new_order/create" method="POST">
+								<input type="hidden" name="plate_id" value= "<%= o.plate_id %>">
+								<input type="hidden" name="plate_title" value= "<%= o.plate_title %>">
+								<input type="hidden" name="plate_description" value= "<%= o.plate_description %>">
+								<input type="hidden" name="plate_price" value= "<%= o.plate_price %>">
+								<input type="hidden" name="plate_time" value= "<%= o.plate_time %>">
+								<input type="hidden" name="chef_id" value= "<%= o.chef_id %>">
+								<input type="hidden" name="customer_id" value= "<%= current_user.id %>">
+								<input type="hidden" name="Delivery" value= "<%= o.delivery %>">
+								<input type="submit" name="Order" value="Order Again" class="btn btn-secondary" role="button">
+							</form>
+						</div></br>
+						<% if !o.plate_rated %>
+							<div class="order-rating">
+								<form action="/order/rating" method="POST">
+									<p style="font-size:14px">Rate your Order:</br>  <input type="number" name="plate_rating" min="1" max="5">
+									<input type="hidden" name="plate_id" value= "<%= o.plate_id %>">
+									<input type="hidden" name="order_id" value= "<%= o.id %>">
+									<input type="submit" name="Order" value="Submit" class="btn.sm btn-secondary" role="button"></p>
+								</form>
+							</div>
+						<% end %>
+						<% if !o.chef_rated %>
+							<div class="chef-rating">
+								<form action="/chef/rating" method="POST">
+									<p style="font-size:14px">Rate the Chef:</br>  <input type="number" name="chef_rating" min="1" max="5">
+									<input type="hidden" name="plate_id" value= "<%= o.plate_id %>">
+									<input type="hidden" name="order_id" value= "<%= o.id %>">
+									<input type="hidden" name="chef_id" value= "<%= o.chef_id %>">
+									<input type="submit" name="Order" value="Submit" class="btn.sm btn-secondary" role="button"></p>
+								</form>
+							</div>
+						<% end %>
+						<div class="delete-recent">
+							<form action="/delete/recent_order" method="POST">
+								<button style="border: none; padding: 0; background: none;">&times;</button>
+								<input type="hidden" name="id" value="<%= o.id %>">
+							</form>
+						</div>
+					</div>
+				<% end %>
+			<% end %>
+			</div>
+	</div>
+  	</div>

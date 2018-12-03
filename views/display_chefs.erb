@@ -1,7 +1,17 @@
-<% @chefs.each do |c| %>
-	<h1><%= c.username %></h1>
-	<form action="/chef/menu" method="GET">
-		<input type="submit" name="chef" value="<%= c.username %>'s menu >>">
-		<input type="hidden" name="id" value=<%= c.id %>>
-	</form></br>
-<% end %>
+<div class="jumbotron">
+	<div class="container">
+		<div class="title" style="text-align:center">
+			<h2 style="font-size:20px">Our Chefs</h2></br>
+		</div>
+		<% @chefs.each do |c| %>
+			<h2 style="font-size:20px"><%= c.username %></h2>
+			<p>Rating: <%= c.rating_overall %> Stars</br>
+			Rated by <%= c.total_ratings %> Customers</p>
+			<form action="/chef/menu" method="GET">
+				<input type="submit" name="chef" value="<%= c.username %>'s menu" class="btn btn-secondary" role="button">
+				<input type="hidden" name="id" value="<%= c.id %>">
+				<input type="hidden" name="username" value="<%= c.username %>">
+			</form></br>
+		<% end %>
+	</div>
+</div>

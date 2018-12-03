@@ -20,7 +20,8 @@ post "/process_login" do
 		session[:user_id] = user.id
 		redirect "/"
 	else
-		erb :"authentication/invalid_login"
+		flash[:error] = "Invalid Username or Password."
+		redirect "/login"
 	end
 end
 
@@ -41,18 +42,18 @@ post "/register" do
 	chef = params[:chef]
 
 	u = User.new
-	u.email = email.downcase
-	u.password = password
-	u.username = username
+	u.email = params["email"].downcase
+	u.password = params["password"]
+	u.username = params["username"]
 	if params["chef"] == "on"
-			u.chef = true
-		end
+		u.chef = true
+	end
 	u.save
 
 	session[:user_id] = u.id
 
-	erb :"authentication/successful_signup"
-
+	flash[:success] = "Successfully Signed Up."
+	redirect "/"
 end
 
 #This method will return the user object of the currently signed in user
