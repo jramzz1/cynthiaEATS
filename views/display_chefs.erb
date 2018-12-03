@@ -4,6 +4,7 @@
 			<h2 style="font-size:20px">Our Chefs</h2></br>
 		</div>
 		<% @chefs.each do |c| %>
+			<hr width="50%" size="8" align="left">
 			<h2 style="font-size:20px"><%= c.username %></h2>
 			<p>Rating: <%= c.rating_overall %> Stars</br>
 			Rated by <%= c.total_ratings %> Customers</p>
