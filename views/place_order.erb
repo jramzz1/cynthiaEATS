@@ -1,0 +1,65 @@
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.css" media="screen,projection">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<div class="jumbotron" style="background-image: linear-gradient(#BFFFFA, white)">
+  <form action="/order/charge" method="post" class="payment">
+    <label class="amount">
+      <h2 style="font-size:30px"><b>Order Confirmation</b></h2>
+      <p style="font-size:14px">
+          <b>Placing order for:</b> <%= @order.meal_title %></br>
+          <b>Made by Chef:</b> <%= @chef.username %></br>
+          <b>Item Price:</b> $<%= @order.price %></br>
+          <label>
+            <input type="checkbox" name="Delivery" />
+            <span>Delivery</span>
+          </label></br>
+
+          <label>
+            <input type="checkbox" name="Carry Out" />
+            <span>Carry Out</span>
+          </label></br></br>
+
+          <b>Fees:</b></br>
+            Delivery Fee: $<%= @order.delivery_price %></br>
+
+          <% if !current_user.pro %>
+            Regular User: $3 dollar fee per order.
+            <p hidden><% @order.price += 3 %></p>
+          <% elsif current_user.pro %>
+            Subscriber: $1 dollar fee per order.
+            <p hidden><% @order.price += 1 %></p>
+          <% end %></br></br>
+      </p>
+    </label>
+
+    <% if params["Delivery"] == "on" %>
+      <% @order.price += @order.delivery_price %>
+    <% end %>
+
+    <input type="hidden" name="plate_id" value= "<%= @order.id %>">
+    <input type="hidden" name="plate_title" value= "<%= @order.meal_title %>">
+    <input type="hidden" name="plate_description" value= "<%= @order.meal_description %>">
+    <input type="hidden" name="plate_price" value= "<%= @order.price %>">
+    <input type="hidden" name="plate_time" value= "<%= @order.time %>">
+    <input type="hidden" name="chef_id" value= "<%= @order.cook_id %>">
+    <input type="hidden" name="customer_id" value= "<%= current_user.id %>">
+    <input type="hidden" name="delivery_price" value= "<%= @order.delivery_price %>">
+
+    <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+            data-key="<%= settings.publishable_key %>"
+            data-description="<%= @order.meal_title %>"
+            data-amount="<%= dollars_to_cents(@order.price) %>"
+            data-locale="auto">
+    </script>
+    <script>
+        // Hide default stripe button, be careful there if you
+        // have more than 1 button of that class
+        document.getElementsByClassName("stripe-button-el")[0].style.display = 'none';
+    </script>
+    <div class="wrapper" style="text-align: left; position: absolute">
+      <input type="submit" name="Pay Now" value="Pay Now" class="btn btn-secondary" role="button">
+    </div>
+  </form>
+</div>

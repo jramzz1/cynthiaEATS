@@ -1,13 +1,28 @@
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
 <!-- Main jumbotron for a primary marketing message or call to action -->
 <div class="top-main">
-  <div class="jumbotron">
+  <div class="jumbotron" style="background-image: linear-gradient(#BFFFFA, white)">
     <div class="container">
       <div class="home_image">
-      <img src="/images/Banner.jpg">
-      <div class="centered">
-        <h2 style="font-size: 30pt">Drive your hunger home with ChefEats!</h2>
-        <p><a class="btn btn-primary" href="/sign_up" role="button">Sign Up Now!</a></p>
-      </div>
+        <img src="/images/Banner.jpg">
+          <div class="centered">
+            <h2 style="font-size: 30pt">Drive your hunger home with ChefEats!</h2>
+
+            <% if current_user %>
+              <p>
+                <a class="btn btn-primary" href="/chefs" role="button">View Chefs</a>
+              </p>
+            <% end %>
+
+            <% if !current_user %>
+              <p>
+                <a class="btn btn-primary" href="/sign_up" role="button">Sign Up Now!</a>
+              </p>
+            <% end %>
+          </div>
     </div>
     </div>
   </div>
@@ -25,10 +40,7 @@
     <div class="col-md-4">
       <h2>Membership</h2>
       <p>Get access to the top rated chefs at a discount price!</p></br>
-      <p><a class="btn btn-secondary" href="/upgrade" role="button">Subscribe Now!</a></p>
+      <p><a class="btn btn-secondary" href="/subscribe" role="button">Subscribe Now!</a></p>
     </div>
   </div>
-
-  <hr>
-
 </div>

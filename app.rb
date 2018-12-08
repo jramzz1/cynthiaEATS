@@ -33,6 +33,7 @@ class MenuEntry
 	property :image_url, Text
 	property :price, Integer 
 	property :time, Integer
+	property :delivery_price, Integer
 	property :rating1, Integer, :default => 0
 	property :rating2, Integer, :default => 0
 	property :rating3, Integer, :default => 0
@@ -83,6 +84,10 @@ def chef_only!
 	end
 end
 
+def dollars_to_cents(dollars)
+  (100 * dollars.to_r).to_i
+end
+
 DataMapper.finalize
 MenuEntry.auto_upgrade!
 CustomerOrder.auto_upgrade!
@@ -94,12 +99,97 @@ if User.all(administrator: true).count == 0
 	u.password = "admin"
 	u.username = "admin"
 	u.administrator = true
+	u.pro = true
+	u.chef = true
 	u.save
 end
 
+# User Dashboard where most of the magic happens
+get "/dashboard" do
+	authenticate!
+
+	@menus = MenuEntry.all
+	@orders = current_user.customer_orders.reverse.last(4)
+	@chefs = User.all(chef: true)
+	erb :dashboard
+end
+
+# Displays order information before purchasing
+get '/display/order/' do
+	authenticate!
+
+	@order = MenuEntry.get(params["plate_id"])
+	@chef = User.get(params["chef_id"])
+	erb :place_order
+end
+
+# Payment stuff for orders and creates database entry
+post '/order/charge' do
+	@amount = dollars_to_cents(params["plate_price"])
+
+	c = CustomerOrder.new
+	c.user_id = params["customer_id"]
+	c.chef_id = params["chef_id"]
+	c.plate_description = params["plate_description"]
+	c.plate_id = params["plate_id"]
+	c.plate_price = params["plate_price"]
+	c.plate_time = params["plate_time"]
+	c.plate_title = params["plate_title"]
+	c.plate_rated = false
+	c.chef_rated = false
+
+	# Adds $10 to order if delivery
+	if params["Delivery"] && params["Delivery"] == "on"
+		c.delivery = true
+		c.plate_price += params["delivery_price"].to_i
+		@delivery = dollars_to_cents(params["delivery_price"])
+		@amount = @amount + @delivery
+	end
+
+	# Adds $1 if user is a subscriber or $3 if not
+	if current_user.pro
+		c.plate_price += 1
+		@amount = @amount + 100
+	elsif !current_user.pro
+		c.plate_price += 3
+		@amount = @amount + 300
+	end
+
+	c.save
+
+  	customer = Stripe::Customer.create(
+    :email => current_user.email,
+    :source  => params[:stripeToken]
+  )
+
+  charge = Stripe::Charge.create(
+    :amount      => @amount,
+    :description => 'Sinatra Charge',
+    :currency    => 'usd',
+    :customer    => customer.id,
+  )
+
+  	flash[:success] = "Success: #{c.plate_title} order placed for: $#{c.plate_price} dollars"
+  	redirect "/dashboard"
+end
+
+# Upgrade User to pro (monthly subscription)
+get '/subscribe' do
+	authenticate!
+
+	if current_user.pro
+		flash[:error] = "Already a Subscriber"
+		redirect "/"
+	end
+
+	reg_only!
+	erb :subscribe
+end
+
+# Payment stuff for subscribers
 post '/charge' do
-  # Amount in cents
-  @amount = 500
+  # Amount ($20) in cents
+  @amount = 2000
 
   customer = Stripe::Customer.create(
     :email => current_user.email,
@@ -115,22 +205,15 @@ post '/charge' do
 
   	current_user.pro = true
   	current_user.save
+
   	flash[:success] = "Success: One Month Subscription Activated"
   	redirect "/"
 end
 
-get '/upgrade' do
-	authenticate!
-	if current_user.pro
-		flash[:error] = "Already a Subscriber"
-		redirect "/"
-	end
-	reg_only!
-	erb :pay
-end
-
+# Submits a chef rating
 post "/chef/rating" do
 	authenticate!
+
 	chef = User.get(params["chef_id"])
 
 	new_total = chef.total_ratings
@@ -175,8 +258,10 @@ post "/chef/rating" do
 	redirect "/dashboard"
 end
 
+# Submitts an order rating
 post "/order/rating" do
 	authenticate!
+
 	item = MenuEntry.get(params["plate_id"])
 
 	new_total = item.total_ratings
@@ -221,17 +306,32 @@ post "/order/rating" do
 	redirect "/dashboard"
 end
 
+# Gets information for new menu item (for chefs)
+get "/new_meal/new" do
+	authenticate!
+	chef_only!
+
+	erb :new_meal
+end
+
+# Creates a new menu item (for chefs)
 post "/new_meal/create" do
 	authenticate!
 	chef_only!
-	if params["title"] != nil && params["description"] != nil
+
+	if params["title"] != "" && params["description"] != ""
 		m = MenuEntry.new
 		m.cook_id = current_user.id
 		m.meal_title = params["title"]
 		m.meal_description = params["description"]
 		m.price = params["price"]
 		m.time = params["time"]
+		m.delivery_price = params["delivery_price"]
+		temp = current_user.chef_items
+		temp = temp + 1
+		current_user.update(:chef_items => temp)
 		m.save
+
 		flash[:success] = "Success: You added a new item to your menu."
 		redirect "/dashboard"
 	else
@@ -240,80 +340,52 @@ post "/new_meal/create" do
 	end
 end
 
-get "/new_meal/new" do
-	authenticate!
-	chef_only!
-	erb :new_meal
-end
-
-post '/delete/recent_order' do
-	authenticate!
-	item = CustomerOrder.get(params["id"])
-	item.destroy if item != nil
-	flash[:success] = "Success: Recent Order Deleted."
-	redirect "/dashboard"
-end
-
-post '/delete/menu_item' do
-	authenticate!
-	chef_only!
-	item = MenuEntry.get(params["id"])
-	item.destroy if item != nil
-	flash[:success] = "Success: Menu Item Deleted."
-	redirect "/dashboard"
-end
-
-post "/new_order/create" do
-	authenticate!
-	c = CustomerOrder.new
-	c.user_id = params["customer_id"]
-	c.chef_id = params["chef_id"]
-	c.plate_description = params["plate_description"]
-	c.plate_id = params["plate_id"]
-	c.plate_price = params["plate_price"]
-	c.plate_time = params["plate_time"]
-	c.plate_title = params["plate_title"]
-	c.plate_rated = false
-	c.chef_rated = false
-
-	if params["Delivery"] && params["Delivery"] == "on"
-		c.delivery = true
-	end
-	c.save
-
-	flash[:success] = "Success: Order Placed!"
-	redirect "/dashboard"
-end
-
+# Gets all chefs
 get "/chefs" do
 	authenticate!
+
 	@chefs = User.all(chef: true)
 	erb :display_chefs
 end
 
+# Gets the menu for a certain chef
 get "/chef/menu" do
 	authenticate!
+
 	@menu = MenuEntry.all(cook_id:params["id"])
 	@chef = params["username"]
 	erb :display_menu
 end
 
-get "/subscribe" do
-	erb :subscribe
-end
-
-get "/" do
-	erb :index
-end
-
-get "/dashboard" do
+# Deletes menu item (for chefs)
+post '/delete/menu_item' do
 	authenticate!
-	@menus = MenuEntry.all
-	@orders = CustomerOrder.all
-	@chefs = User.all(chef: true)
-	erb :dashboard
+	chef_only!
+
+	item = MenuEntry.get(params["id"])
+	item.destroy if item != nil
+
+	flash[:success] = "Success: Menu Item Deleted."
+	redirect "/dashboard"
 end
 
+# Deletes recent order from dashboard
+post '/delete/recent_order' do
+	authenticate!
+
+	item = CustomerOrder.get(params["id"])
+	item.destroy if item != nil
+
+	flash[:success] = "Success: Recent Order Deleted."
+	redirect "/dashboard"
+end
+
+# About Us page
 get "/about-us" do
 	erb :about
+end
+
+# Homepage
+get "/" do
+	erb :index
 end

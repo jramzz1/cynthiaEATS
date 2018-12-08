@@ -22,6 +22,7 @@ class User
     property :rating5, Integer, :default => 0
     property :rating_overall, Integer, :default => 0
     property :total_ratings, Integer, :default => 0
+    property :chef_items, Integer, :default => 0
     property :administrator, Boolean, :default => false
     property :pro, Boolean, :default => false
     property :chef, Boolean, :default => false
@@ -29,7 +30,16 @@ class User
     def login(password)
     	return self.password == password
     end
+
+    def customer_orders
+        return CustomerOrder.all(user_id: id)
+    end
+
+    def chef_orders
+        return CustomerOrder.all(chef_id: id)
+    end
 end
+
 
 # Perform basic sanity checks and initialize all relationships
 # Call this when you've defined all your models

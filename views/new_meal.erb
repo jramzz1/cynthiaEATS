@@ -1,16 +1,44 @@
-	<div class="jumbotron">
-		<div class="new_menu">
-			<form action="/new_meal/create" method="POST">
-				<h2 style="font-size:20px">Create a new menu entry for <%= current_user.username %></h2>
-				Title:</br>
-				<input type="text" name="title"></br>
-				Description:</br>
-				<textarea name="description" cols="43" rows="5"></textarea></br>
-				Price:</br>
-				<input type="number" step="any" name="price"></br>
-				Time:</br>
-				<input type="number" name="time"> minutes</br></br>
-				<input type="submit" name="Submit" class="btn btn-secondary" role="button">
-			</form>
+<head>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.css" media="screen,projection">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+	<div class="new_menu">
+		<div class="container main"">
+			<div class="row">
+				<div class="col align-center" style="padding-top: 30px">
+					<form action="/new_meal/create" method="POST">
+						<label style="font-size:20px; text-align: center">
+							New Menu Entry for <%= current_user.username %>
+						</label>
+						<p>
+							<label for="id_title">Title:</label>
+							<input type="text" name="title" autofocus maxlength="254">
+						</p>
+						<p>
+							<label for="id_description">Description:</label>
+							<input type="text" name="description" autofocus maxlength="254">
+						</p>
+						<p>
+							<label for="id_price">Price:</label>
+							<input type="number" step="any" name="price">
+						</p>
+						<p>
+							<label for="id_time">Time to prepare (minutes):</label>
+							<input type="number" step="any" name="time">
+						</p>
+						<p>
+							<label for="id_delivery_price">Delivery Price:</label>
+							<input type="number" step="any" name="delivery_price">
+						</p>
+						<p>
+							<button class="btn waves-effect waves-light submit" name="submit">Submit</button>
+							<input type="hidden" name="Submit" autofocus maxlength="254">
+						</p>
+					</form>
+				</div>
+			</div>
 		</div>
 	</div>
+</body>

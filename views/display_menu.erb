@@ -1,17 +1,29 @@
+<head>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.css" media="screen,projection">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
 <div class="jumbotron">
 	<div class="container">
-		<h2 style="font-size:24px; text-align: center"><%= @chef %>'s Menu</h2>
+		<h2 style="font-size:24px; text-align: center">
+			<%= @chef %>'s Menu
+		</h2>
+		
 		<% @menu.each do |m| %>
-		<hr width="50%" size="8" align="left">
-			<h2 style="font-size:20px"><%= m.meal_title %></h2>
-			<p>Rating: <%= m.rating_overall %> Stars</br>
-			Rated by <%= m.total_ratings %> Customers</p>
-			<p style="font-size:14px">Description: <%= m.meal_description %></br>
-			Price: $<%= m.price %></br>
-			Time to prepare: <%= m.time %> minutes</p>
-			<form action="/new_order/create" method="POST">
-				<p style="font-size:14px">Delivery: <input type="checkbox" name="Delivery"></br>
-				Carry Out: <input type="checkbox" name="Carry Out"></p>
+			<hr width="50%" size="8"></hr>
+			<h2 style="font-size:20px">
+				<b><%= m.meal_title %></b>
+			</h2>
+			<p>
+				<b>Rating:</b> <%= m.rating_overall %> Stars</br>
+				Rated by <%= m.total_ratings %> Customers
+			</p>
+			<p style="font-size:14px">
+				<b>Description:</b> <%= m.meal_description %></br>
+				<b>Price:</b> $<%= m.price %></br>
+				<b>Time to prepare:</b> <%= m.time %> minutes
+			</p>
+			<form action="/display/order/" method="GET">
 				<input type="hidden" name="plate_id" value= "<%= m.id %>">
 				<input type="hidden" name="plate_title" value= "<%= m.meal_title %>">
 				<input type="hidden" name="plate_description" value= "<%= m.meal_description %>">
@@ -19,7 +31,7 @@
 				<input type="hidden" name="plate_time" value= "<%= m.time %>">
 				<input type="hidden" name="chef_id" value= "<%= m.cook_id %>">
 				<input type="hidden" name="customer_id" value= "<%= current_user.id %>">
-				<input type="submit" name="Order" value="Order" class="btn btn-secondary" role="button">
+				<input type="submit" name="Select" value="Select" class="btn btn-secondary btn-sm" role="button">
 			</form></br>
 		<% end %>
 	</div>

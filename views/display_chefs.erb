@@ -1,18 +1,32 @@
+<head>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.css" media="screen,projection">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
 <div class="jumbotron">
 	<div class="container">
 		<div class="title" style="text-align:center">
-			<h2 style="font-size:20px">Our Chefs</h2></br>
+			<h2 style="font-size:24px">
+				Our Chefs
+			</h2>
 		</div>
+
 		<% @chefs.each do |c| %>
-			<hr width="50%" size="8" align="left">
-			<h2 style="font-size:20px"><%= c.username %></h2>
-			<p>Rating: <%= c.rating_overall %> Stars</br>
-			Rated by <%= c.total_ratings %> Customers</p>
-			<form action="/chef/menu" method="GET">
-				<input type="submit" name="chef" value="<%= c.username %>'s menu" class="btn btn-secondary" role="button">
-				<input type="hidden" name="id" value="<%= c.id %>">
-				<input type="hidden" name="username" value="<%= c.username %>">
-			</form></br>
+			<% if c.chef_items != 0 %>
+				<hr width="50%" size="8" align="center"></hr>
+				<h2 style="font-size:20px">
+					<%= c.username %>
+				</h2>
+				<p>
+					Rating: <%= c.rating_overall %> Stars</br>
+					Rated by <%= c.total_ratings %> Customers
+				</p>
+				<form action="/chef/menu" method="GET">
+					<input type="submit" name="chef" value="<%= c.username %>'s menu" class="btn btn-secondary btn-sm" role="button">
+					<input type="hidden" name="id" value="<%= c.id %>">
+					<input type="hidden" name="username" value="<%= c.username %>">
+				</form></br>
+			<% end %>
 		<% end %>
 	</div>
 </div>

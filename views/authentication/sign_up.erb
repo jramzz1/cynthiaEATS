@@ -1,4 +1,4 @@
-<form action="register" method="POST">
+<!-- <form action="register" method="POST">
 	Email:<br/>
 	<input type="text" name="email"><br/>
 	Username:<br/>
@@ -7,4 +7,42 @@
 	<input type="password" name="password"><br/>
 	Chef? <input type="checkbox" name="chef"><br/><br/>
 	<input type="submit" name="" value="Register" class="btn btn-secondary" role="button">
-</form>
+</form> -->
+
+<head>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.css" media="screen,projection">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container main"">
+		<div class="row">
+			<div class="col align-center" style="padding-top: 30px">
+				<form action="/register" method="POST">
+					<p>
+						<label for="id_email">Email:</label>
+						<input type="text" name="email" autofocus maxlength="254">
+					</p>
+					<p>
+						<label for="id_username">Username:</label>
+						<input type="text" name="username" autofocus maxlength="254">
+					</p>
+					<p>
+						<label for="id_password">Password:</label>
+						<input type="password" name="password">
+					</p>
+					<p>
+      					<label>
+        					<input type="checkbox" name="chef" />
+        					<span>Are you a Chef?</span>
+      					</label>
+    				</p>
+					<p>
+						<button class="btn waves-effect waves-light submit" name="submit">Register</button>
+						<input type="hidden" name="register" value="/" autofocus maxlength="254">
+					</p>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>

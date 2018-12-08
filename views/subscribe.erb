@@ -1,1 +1,29 @@
-Subscriptions will be done here!
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.css" media="screen,projection">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<div class="container">
+    <p>Signing up for a monthly subscription guarantees you access to the top chefs in your area, Plus discounted prices on items your order.</br>
+    blah blah blah more info....</p>
+  <form action="/charge" method="post" class="payment">
+    <article>
+      <label class="amount">
+        <span>Amount: $20.00</span>
+      </label>
+    </article>
+
+    <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+            data-key="<%= settings.publishable_key %>"
+            data-description="A month's subscription"
+            data-amount="2000"
+            data-locale="auto">
+    </script>
+    <script>
+        // Hide default stripe button, be careful there if you
+        // have more than 1 button of that class
+        document.getElementsByClassName("stripe-button-el")[0].style.display = 'none';
+    </script>
+    <input type="submit" name="Pay Now" value="Pay Now" class="btn btn-secondary" role="button">
+  </form>
+</div>
