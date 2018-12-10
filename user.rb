@@ -15,6 +15,8 @@ class User
     property :email, String
     property :password, String
     property :username, String
+    property :imgDataChef, Text, :default => "/images/users/chef.png"
+    property :imgDataUser, Text, :default => "/images/users/user.png"
     property :rating1, Integer, :default => 0
     property :rating2, Integer, :default => 0
     property :rating3, Integer, :default => 0

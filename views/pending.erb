@@ -1,0 +1,58 @@
+<head>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.css" media="screen,projection">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<div class="jumbotron">
+	<div class="card-container" style="margin: auto">
+	  	<div class="header" style="text-align: center">
+	  		<h1 style="font-size:24px">
+	  			Pending Orders
+	  		</h1>
+	  	</div>
+		<div class="card-deck" style="margin: auto; display: flex; justify-content: center; padding-bottom: 4rem">
+			<% @orders.each do |o| %>
+				<% if !o.completed %>
+					<div class="card" style="min-width: 40rem; max-width: 40rem;">
+						<div class="card-body text-dark">
+							<label>
+	<!-- 						<div class="card-header" style="text-align: center"><b><%= o.plate_title %></b></div> -->
+								<h5 class="card-title">
+									<b><%= o.plate_title %></b>
+								</h5>
+
+								<p class="card-text">
+									<b>Description:</b> <%= o.plate_description %></br>
+									<b>Price:</b> $<%= o.plate_price %></br>
+									<b>Time to Prepare:</b> <%= o.plate_time %> minutes</br>
+
+									<% if o.delivery %>
+										<b>Delivery</b></br>
+									<% else %>
+										<b>Carry Out</b></br>
+									<% end %></br>
+
+									User Info:</br>
+									<% @customers.each do |c| %>
+										<% if c.id == o.user_id %>
+											<b>Customer:</b> <%= c.username %></br>
+											<b>Customer Email:</b> <%= c.email %></br>
+										<% end %>
+									<% end %>
+								</p>
+
+								<div class="complete">
+									<form action="/complete/order" method="POST">
+										<input type="submit" name="complete" value="order complete" class="btn btn-secondary btn-small" role="button">
+										<!-- <button style="border: none; padding: 0; background: none;">&times;</button> -->
+										<input type="hidden" name="id" value="<%= o.id %>">
+									</form>
+								</div>
+							</label>
+						</div>
+					</div>
+				<% end %>
+			<% end %>
+		</div>
+	</div>
+</div>

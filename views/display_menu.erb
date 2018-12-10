@@ -21,9 +21,20 @@
 			<p style="font-size:14px">
 				<b>Description:</b> <%= m.meal_description %></br>
 				<b>Price:</b> $<%= m.price %></br>
-				<b>Time to prepare:</b> <%= m.time %> minutes
+				<b>Time to prepare:</b> <%= m.time %> minutes</br>
 			</p>
+			<img src="<%= m.imgData %>" style="max-width: 200px; height: auto" class="rounded"/></br></br>
 			<form action="/display/order/" method="GET">
+				<label>
+		            <input type="checkbox" name="Delivery" />
+		            <span>Delivery (Additional $<%= m.delivery_price %> fee)</span>
+		        </label></br>
+
+		        <label>
+		            <input type="checkbox" name="Carry Out" />
+		            <span>Carry Out</span>
+          		</label></br></br>
+
 				<input type="hidden" name="plate_id" value= "<%= m.id %>">
 				<input type="hidden" name="plate_title" value= "<%= m.meal_title %>">
 				<input type="hidden" name="plate_description" value= "<%= m.meal_description %>">
@@ -31,6 +42,7 @@
 				<input type="hidden" name="plate_time" value= "<%= m.time %>">
 				<input type="hidden" name="chef_id" value= "<%= m.cook_id %>">
 				<input type="hidden" name="customer_id" value= "<%= current_user.id %>">
+				<input type="hidden" name="delivery_price" value= "<%= m.delivery_price %>">
 				<input type="submit" name="Select" value="Select" class="btn btn-secondary btn-sm" role="button">
 			</form></br>
 		<% end %>

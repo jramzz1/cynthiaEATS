@@ -1,42 +1,42 @@
 <head>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.css" media="screen,projection">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
 
-<div class="jumbotron" style="background-image: linear-gradient(#BFFFFA, white)">
+<div class="jumbotron" style="background-image: linear-gradient(#FFFBF6, white); padding-top: -5px">
   <form action="/order/charge" method="post" class="payment">
     <label class="amount">
       <h2 style="font-size:30px"><b>Order Confirmation</b></h2>
+      <img src="<%= @order.imgData %>" style="max-width: 250px; height: auto" class="rounded"/></br></br>
       <p style="font-size:14px">
           <b>Placing order for:</b> <%= @order.meal_title %></br>
           <b>Made by Chef:</b> <%= @chef.username %></br>
-          <b>Item Price:</b> $<%= @order.price %></br>
-          <label>
-            <input type="checkbox" name="Delivery" />
-            <span>Delivery</span>
-          </label></br>
-
-          <label>
-            <input type="checkbox" name="Carry Out" />
-            <span>Carry Out</span>
-          </label></br></br>
-
+          <b>Time to Prepare:</b> <%= @order.time %> minutes</br>
+          <b>Item Price:</b> $<%= @order.price %></br></br>
           <b>Fees:</b></br>
+          <% if @order.delivery == true %>
             Delivery Fee: $<%= @order.delivery_price %></br>
+          <% end %>
 
           <% if !current_user.pro %>
             Regular User: $3 dollar fee per order.
-            <p hidden><% @order.price += 3 %></p>
+            <% @order.price += @reg %>
           <% elsif current_user.pro %>
             Subscriber: $1 dollar fee per order.
-            <p hidden><% @order.price += 1 %></p>
+            <% @order.price += @sub %>
           <% end %></br></br>
+
+          <% if @order.delivery == true %>
+            <% @order.price += @order.delivery_price %>
+          <% end %>
+
+          <hr width="50%" size="5" align="left"></hr>
+          <h2 style="font-size:20px">
+            <b>Total:</b> $<%= @order.price %>
+          </h2>
       </p>
     </label>
-
-    <% if params["Delivery"] == "on" %>
-      <% @order.price += @order.delivery_price %>
-    <% end %>
 
     <input type="hidden" name="plate_id" value= "<%= @order.id %>">
     <input type="hidden" name="plate_title" value= "<%= @order.meal_title %>">
@@ -45,7 +45,7 @@
     <input type="hidden" name="plate_time" value= "<%= @order.time %>">
     <input type="hidden" name="chef_id" value= "<%= @order.cook_id %>">
     <input type="hidden" name="customer_id" value= "<%= current_user.id %>">
-    <input type="hidden" name="delivery_price" value= "<%= @order.delivery_price %>">
+    <input type="hidden" name="Delivery" value= "<%= @order.delivery %>">
 
     <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
             data-key="<%= settings.publishable_key %>"

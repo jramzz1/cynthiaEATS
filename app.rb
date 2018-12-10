@@ -30,10 +30,10 @@ class MenuEntry
 	property :cook_id, Integer
 	property :meal_title, Text
 	property :meal_description, Text
-	property :image_url, Text
 	property :price, Integer 
 	property :time, Integer
 	property :delivery_price, Integer
+	property :imgData, Text
 	property :rating1, Integer, :default => 0
 	property :rating2, Integer, :default => 0
 	property :rating3, Integer, :default => 0
@@ -41,6 +41,7 @@ class MenuEntry
 	property :rating5, Integer, :default => 0
 	property :rating_overall, Integer, :default => 0
 	property :total_ratings, Integer, :default => 0
+	property :delivery, Boolean, :default => false
 end
 
 class CustomerOrder
@@ -53,11 +54,11 @@ class CustomerOrder
 	property :plate_description, Text
 	property :user_id, Integer
 	property :chef_id, Integer
-	property :image_url, Text
 	property :created_at, DateTime
 	property :delivery, Boolean, :default => false
 	property :plate_rated, Boolean, :default => false
 	property :chef_rated, Boolean, :default => false
+	property :completed, Boolean, :default => false
 end
 
 def admin_only!
@@ -104,6 +105,53 @@ if User.all(administrator: true).count == 0
 	u.save
 end
 
+get "/pending/orders" do
+	@orders = CustomerOrder.all(chef_id:current_user.id)
+	@customers = User.all()
+	erb :pending
+end
+
+post "/complete/order" do
+	order = CustomerOrder.get(params["id"])
+	order.update(:completed => true)
+	redirect "/pending/orders"
+end
+
+post "/save_image" do
+  @filename = params[:file][:filename]
+  file = params[:file][:tempfile]
+
+  File.open("./public/images/items/#{@filename}", 'wb') do |f|
+  	f.write(file.read)
+  end
+
+  entry = MenuEntry.get(params["id"])
+  entry.update(:imgData => "/images/items/#{@filename}")
+
+	flash[:success] = "Success: image uploaded"
+  redirect "dashboard"
+end
+
+post "/save_profile" do
+  @filename = params[:file][:filename]
+  file = params[:file][:tempfile]
+
+  File.open("./public/images/users/#{@filename}", 'wb') do |f|
+  	f.write(file.read)
+  end
+
+  user = User.get(current_user.id)
+
+  if current_user.chef
+  	user.update(:imgDataChef => "/images/users/#{@filename}")
+  else
+  	user.update(:imgDataUser => "/images/users/#{@filename}")
+  end
+
+	flash[:success] = "Success: image uploaded"
+  redirect "dashboard"
+end
+
 # User Dashboard where most of the magic happens
 get "/dashboard" do
 	authenticate!
@@ -120,6 +168,17 @@ get '/display/order/' do
 
 	@order = MenuEntry.get(params["plate_id"])
 	@chef = User.get(params["chef_id"])
+	@sub = 1
+	@reg = 3
+
+	if params["Delivery"] && params["Delivery"] = "on"
+		erb :update_delivery
+	end
+
+	erb :place_order
+end
+
+post '/update/delivery' do
 	erb :place_order
 end
 
@@ -135,11 +194,11 @@ post '/order/charge' do
 	c.plate_price = params["plate_price"]
 	c.plate_time = params["plate_time"]
 	c.plate_title = params["plate_title"]
-	c.plate_rated = false
-	c.chef_rated = false
+	# c.plate_rated = false
+	# c.chef_rated = false
 
 	# Adds $10 to order if delivery
-	if params["Delivery"] && params["Delivery"] == "on"
+	if params["Delivery"]
 		c.delivery = true
 		c.plate_price += params["delivery_price"].to_i
 		@delivery = dollars_to_cents(params["delivery_price"])
@@ -327,6 +386,7 @@ post "/new_meal/create" do
 		m.price = params["price"]
 		m.time = params["time"]
 		m.delivery_price = params["delivery_price"]
+
 		temp = current_user.chef_items
 		temp = temp + 1
 		current_user.update(:chef_items => temp)

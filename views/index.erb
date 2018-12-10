@@ -1,46 +1,46 @@
 <head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.css" media="screen,projection">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <!-- Main jumbotron for a primary marketing message or call to action -->
-<div class="top-main">
-  <div class="jumbotron" style="background-image: linear-gradient(#BFFFFA, white)">
-    <div class="container">
+<body>
+<!--   <div class="jumbotron" style="background-image: linear-gradient(#BFFFFA, white)"> -->
+<!--     <div class="container"> -->
       <div class="home_image">
-        <img src="/images/Banner.jpg">
-          <div class="centered">
-            <h2 style="font-size: 30pt">Drive your hunger home with ChefEats!</h2>
+        <img src="/images/Banner.png" style="max-width: 100%; height: auto; position: center; margin: 0; padding: 0;">
+        <div class="centered">
+          <div class="banner_button" style="top: 60px; left: 110px; position:relative;">
+          <% if current_user %>
+              <a class="btn btn-primary btn-xl" href="/chefs" role="button">Order Now!</a>
+            </p>
+          <% end %>
 
-            <% if current_user %>
-              <p>
-                <a class="btn btn-primary" href="/chefs" role="button">View Chefs</a>
-              </p>
-            <% end %>
-
-            <% if !current_user %>
-              <p>
-                <a class="btn btn-primary" href="/sign_up" role="button">Sign Up Now!</a>
-              </p>
-            <% end %>
+          <% if !current_user %>
+            <p>
+              <a class="btn btn-primary" href="/sign_up" role="button">Get Started!</a>
+            </p>
+          <% end %>
           </div>
-    </div>
-    </div>
-  </div>
-</div>
+        </div>
+      </div></br>
+<!--     </div> -->
+<!--   </div> -->
 
-<div class="container">
+<div class="container-fluid">
   <!-- Example row of columns -->
   <div class="row">
     <div class="col-md-4">
-      <h2>Ready to Order?</h2>
+      <h2 style="font-size: 26px"><b>Order Now</b></h2>
       <p>See available chefs and the delicious Home-Made food they're prepared
       to cook for you right now!</p>
-      <p><a class="btn btn-secondary" href="/chefs" role="button">Order Now!</a></p>
+      <p><a class="btn btn-secondary" href="/chefs" role="button">View Chefs</a></p>
     </div>
     <div class="col-md-4">
-      <h2>Membership</h2>
+      <h2 style="font-size: 26px"><b>Membership</b></h2>
       <p>Get access to the top rated chefs at a discount price!</p></br>
       <p><a class="btn btn-secondary" href="/subscribe" role="button">Subscribe Now!</a></p>
     </div>
   </div>
 </div>
+</body>

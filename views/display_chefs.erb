@@ -13,7 +13,10 @@
 
 		<% @chefs.each do |c| %>
 			<% if c.chef_items != 0 %>
-				<hr width="50%" size="8" align="center"></hr>
+				<hr width="50%" size="8" align="center"></hr></br>
+				<div class="userimage">
+    				<img src="<%= c.imgDataChef %>" style="max-width: 150px; height: auto" class="rounded"/>
+    			</div>
 				<h2 style="font-size:20px">
 					<%= c.username %>
 				</h2>

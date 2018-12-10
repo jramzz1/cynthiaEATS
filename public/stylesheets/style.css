@@ -2,8 +2,9 @@
 .card, .btn, .form-control { border-radius: 0; }
 
 body {
-/*background: url('/images/back.jpg') no-repeat center center fixed;
-  -webkit-background-size: cover;
+background-color: #91D2AA;
+margin: 0;
+/*  -webkit-background-size: cover;
   -moz-background-size: cover;
   background-size: cover;
   -o-background-size: cover;
@@ -21,11 +22,11 @@ body {
     color:#cccccc;
 }
 
-img {
+/*img {
     max-width: 100%;
     height: auto;
     opacity: 0.87;
-}
+}*/
 
 .delete-recent {
     position: relative;
@@ -71,8 +72,13 @@ img {
 }
 
 .jumbotron {
-  background-color: #BFFFFA;
-/*	background-image: linear-gradient(#BFFFFA, white);*/
+  /*background-color: #BFFFFA;*/
+	background-image: linear-gradient(#FFFBF6, white);
+}
+
+.menu_items {
+  /*background-color: #BFFFFA;*/
+  background-image: linear-gradient(#FFFBF6, white);
 }
 
 .top-main {
@@ -88,12 +94,13 @@ img {
   padding: 20px; 
   width: 50%;
   height: auto;
-  background-color: #76f7f7;
+  background-color: #FFFBF6;
 }
 
 .col-md-4 {
-  align-items: center;
-  text-align: center;
+/*  align-items: center;*/
+/*  text-align: center;*/
+  display: flex;
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -106,3 +113,23 @@ img {
     width: 100%;
     text-align: center;
 }
+
+#upload_button {
+  display: inline-block;
+}
+
+#upload_button input[type=file] {
+  display:none;
+}
+
+/*.user_info {
+  background: url("dashboard.jpg");
+}*/
+
+/*.menu_entry {
+  background-color: #76f7f7;
+}*/
+
+/*#upload_button input[type=submit] {
+  display:none;
+}*/

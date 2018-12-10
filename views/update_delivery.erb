@@ -1,0 +1,10 @@
+<form name="myform" action="/update/delivery" method="post">
+	<% @order.delivery = true %>
+	<a href="javascript: submitform()">Search</a>
+</form>
+
+<script type="text/javascript">
+function submitform(){
+	document.myform.submit();
+}
+</script>
