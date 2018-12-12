@@ -3,32 +3,23 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
-<!-- Main jumbotron for a primary marketing message or call to action -->
 <body>
-<!--   <div class="jumbotron" style="background-image: linear-gradient(#BFFFFA, white)"> -->
-<!--     <div class="container"> -->
-      <div class="home_image">
-        <img src="/images/Banner.png" style="max-width: 100%; height: auto; position: center; margin: 0; padding: 0;">
-        <div class="centered">
-          <div class="banner_button" style="top: 60px; left: 110px; position:relative;">
-          <% if current_user %>
-              <a class="btn btn-primary btn-xl" href="/chefs" role="button">Order Now!</a>
-            </p>
-          <% end %>
+<div class="home_image">
+<img src="/images/Banner.png" style="max-width: 100%; height: auto; position: center; margin: 0; padding: 0;">
+  <div class="centered">
+    <div class="banner_button" style="top: 60px; left: 110px; position:relative;">
+      <% if current_user %>
+        <p><a class="btn btn-primary btn-xl" href="/chefs" role="button">Order Now!</a></p>
+      <% end %>
 
-          <% if !current_user %>
-            <p>
-              <a class="btn btn-primary" href="/sign_up" role="button">Get Started!</a>
-            </p>
-          <% end %>
-          </div>
-        </div>
-      </div></br>
-<!--     </div> -->
-<!--   </div> -->
+      <% if !current_user %>
+        <p><a class="btn btn-primary" href="/sign_up" role="button">Get Started!</a></p>
+      <% end %>
+    </div>
+  </div>
+</div></br>
 
 <div class="container-fluid">
-  <!-- Example row of columns -->
   <div class="row">
     <div class="col-md-4">
       <h2 style="font-size: 26px"><b>Order Now</b></h2>

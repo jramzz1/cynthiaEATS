@@ -1,94 +1,98 @@
+#Chefeats by Jesus Ramirez & Cynthia Rocha
+#for CSCI 3340 @University of Texas Rio Grande Valley
+
 require "sinatra"
 require 'data_mapper'
 require 'stripe'
 require 'sinatra/flash'
 require_relative "authentication.rb"
 
-#the following urls are included in authentication.rb
-# GET /login
-# GET /logout
-# GET /sign_up
-
-# authenticate! will make sure that the user is signed in, if they are not they will be redirected to the login page
-# if the user is signed in, current_user will refer to the signed in user object.
-# if they are not signed in, current_user will be nil
-
+#Database setup
 if ENV['DATABASE_URL']
   DataMapper::setup(:default, ENV['DATABASE_URL'] || 'postgres://localhost/mydb')
 else
   DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/app.db")
 end
 
+#Stripe Test Keys for payments
 set :publishable_key, 'pk_test_u0ejpi5VbUvNtY1PhRwQdCyf'
 set :secret_key, 'sk_test_zNiT7p9yvBf8SMJUvdxzO8Bp'
 
 Stripe.api_key = settings.secret_key
 
+#Menu Items class
 class MenuEntry
 	include DataMapper::Resource
-	property :id, Serial
-	property :cook_id, Integer
-	property :meal_title, Text
-	property :meal_description, Text
-	property :price, Integer 
-	property :time, Integer
-	property :delivery_price, Integer
-	property :imgData, Text
-	property :rating1, Integer, :default => 0
-	property :rating2, Integer, :default => 0
-	property :rating3, Integer, :default => 0
-	property :rating4, Integer, :default => 0
-	property :rating5, Integer, :default => 0
-	property :rating_overall, Integer, :default => 0
-	property :total_ratings, Integer, :default => 0
-	property :delivery, Boolean, :default => false
+	property :id, Serial								#Object ID
+	property :cook_id, Integer							#Contains Chef ID
+	property :meal_title, Text							#Contains the Title of the Menu Item
+	property :meal_description, Text					#Contains the Description of the Menu Item
+	property :price, Integer 							#Contains the Price of the Menu Item
+	property :time, Integer								#Contains the Time to cook of the Menu Item
+	property :delivery_price, Integer					#Contains the Delivery Price of the Menu Item
+	property :imgData, Text								#Contains the Image Location of the Menu Item
+	property :delivery, Boolean, :default => false		#Used for updating price if delivery is true 
+														#----- For Weighted Average (Ratings) -----#
+	property :rating1, Integer, :default => 0			#Total amount of 1 Star Ratings
+	property :rating2, Integer, :default => 0			#Total amount of 2 Star Ratings
+	property :rating3, Integer, :default => 0			#Total amount of 3 Star Ratings
+	property :rating4, Integer, :default => 0			#Total amount of 4 Star Ratings
+	property :rating5, Integer, :default => 0			#Total amount of 5 Star Ratings
+	property :rating_overall, Integer, :default => 0	#Menu Item Rating
+	property :total_ratings, Integer, :default => 0		#Total amount of ratings of the Menu Item
 end
 
+#CustomerOrders class
 class CustomerOrder
 	include DataMapper::Resource
-	property :id, Serial
-	property :plate_id, Integer
-	property :plate_price, Integer
-	property :plate_time, Integer
-	property :plate_title, Text
-	property :plate_description, Text
-	property :user_id, Integer
-	property :chef_id, Integer
-	property :created_at, DateTime
-	property :delivery, Boolean, :default => false
-	property :plate_rated, Boolean, :default => false
-	property :chef_rated, Boolean, :default => false
-	property :completed, Boolean, :default => false
+	property :id, Serial								#Object ID
+	property :plate_id, Integer							#Contains Plate ID
+	property :plate_price, Integer						#Contains the Price of the Menu Item
+	property :plate_time, Integer						#Contains the Time to cook of the Menu Item
+	property :plate_title, Text							#Contains the Title of the Menu Item
+	property :plate_description, Text					#Contains the Description of the Menu Item
+	property :user_id, Integer							#Contains the ID of the user ordering
+	property :chef_id, Integer							#Contains the ID of the chef cooking
+	property :delivery, Boolean, :default => false		#Determines if order will be Delivery or Carry Out
+	property :plate_rated, Boolean, :default => false	#Determines if the Menu Item ordered has been rated
+	property :chef_rated, Boolean, :default => false	#Determines if the Chef of the Menu Item has been rated
+	property :completed, Boolean, :default => false		#Determines if the Order has been completed
 end
 
+#only admin is authorized
 def admin_only!
 	if !current_user || !current_user.administrator
 		redirect "/"
 	end
 end
 
+#only pro users are authorized
 def pro_only!
-	if !current_user || !current_user.pro || !current_user.administrator
+	if !current_user || !current_user.pro
 		redirect "/"
 	end
 end
 
+#only regular users are authorized
 def reg_only!
 	if !current_user || current_user.pro || current_user.administrator
 		redirect "/"
 	end
 end
 
+#only chefs are authorized
 def chef_only!
 	if !current_user || !current_user.chef
 		redirect "/"
 	end
 end
 
+#converts dollar amounts into cents (for Stripe Payment)
 def dollars_to_cents(dollars)
   (100 * dollars.to_r).to_i
 end
 
+#Database finalize
 DataMapper.finalize
 MenuEntry.auto_upgrade!
 CustomerOrder.auto_upgrade!
@@ -105,18 +109,61 @@ if User.all(administrator: true).count == 0
 	u.save
 end
 
+#Display chefs for subscribers
+get "/chef/pro/menu" do
+	#only logged in and pro users
+	authenticate!
+	pro_only!
+
+	#if search field empty redirect to all chefs
+	if params["city"] == ""
+		flash[:error] = "Error: Please input the name of a city."
+		redirect "/chefs"
+
+	#Get all users in city searched for => chefs only
+	else
+		users = User.all(city:params["city"].capitalize)
+		citychefs = users.all{|c|c.chef}
+
+		#remove chefs that don't have no menu items (NOT WORKING??)
+		citychefs.each do |d|
+			if d.chef_items == 0
+				citychefs.delete(d)
+			end
+		end
+
+		#No chefs in the city searched for redirect to all chefs
+		if citychefs.empty?
+			flash[:error] = "Sorry, No Chefs in that city. :("
+			redirect "/chefs"
+
+		#Sort chefs from top rated to lowest => display
+		else
+			@chefs = citychefs.sort{|d|d.rating_overall}.reverse
+			@city = params["city"].capitalize
+			erb :citychefs
+		end
+	end
+end
+
+#Chefs only / see pending orders
 get "/pending/orders" do
+	authenticate!
+	chef_only!
+
 	@orders = CustomerOrder.all(chef_id:current_user.id)
 	@customers = User.all()
 	erb :pending
 end
 
+#Chefs only / complete order (fufilled)
 post "/complete/order" do
 	order = CustomerOrder.get(params["id"])
 	order.update(:completed => true)
 	redirect "/pending/orders"
 end
 
+#Upload and save image for Menu Items
 post "/save_image" do
   @filename = params[:file][:filename]
   file = params[:file][:tempfile]
@@ -127,11 +174,12 @@ post "/save_image" do
 
   entry = MenuEntry.get(params["id"])
   entry.update(:imgData => "/images/items/#{@filename}")
-
-	flash[:success] = "Success: image uploaded"
+  
+  flash[:success] = "Success: image uploaded"
   redirect "dashboard"
 end
 
+#Upload and save image for Profile Picture
 post "/save_profile" do
   @filename = params[:file][:filename]
   file = params[:file][:tempfile]
@@ -142,6 +190,8 @@ post "/save_profile" do
 
   user = User.get(current_user.id)
 
+  #Chefs and Regular Users have different Profile Pictures
+  #Save image address to correct property
   if current_user.chef
   	user.update(:imgDataChef => "/images/users/#{@filename}")
   else
@@ -171,6 +221,8 @@ get '/display/order/' do
 	@sub = 1
 	@reg = 3
 
+	#Sets Delivery to true if User wants delivery before
+	#order confirmation (for updating price)
 	if params["Delivery"] && params["Delivery"] = "on"
 		erb :update_delivery
 	end
@@ -178,14 +230,17 @@ get '/display/order/' do
 	erb :place_order
 end
 
+#Redirect after changing delivery to true
 post '/update/delivery' do
 	erb :place_order
 end
 
 # Payment stuff for orders and creates database entry
 post '/order/charge' do
+	#converts dollars to cents (for stripe payment)
 	@amount = dollars_to_cents(params["plate_price"])
 
+	#creates a new customer order
 	c = CustomerOrder.new
 	c.user_id = params["customer_id"]
 	c.chef_id = params["chef_id"]
@@ -194,13 +249,13 @@ post '/order/charge' do
 	c.plate_price = params["plate_price"]
 	c.plate_time = params["plate_time"]
 	c.plate_title = params["plate_title"]
-	# c.plate_rated = false
-	# c.chef_rated = false
 
 	# Adds $10 to order if delivery
 	if params["Delivery"]
 		c.delivery = true
 		c.plate_price += params["delivery_price"].to_i
+
+		#converts dollars to cents (for stripe payment)
 		@delivery = dollars_to_cents(params["delivery_price"])
 		@amount = @amount + @delivery
 	end
@@ -236,6 +291,7 @@ end
 get '/subscribe' do
 	authenticate!
 
+	#already a subcriber, redirect to homepage
 	if current_user.pro
 		flash[:error] = "Already a Subscriber"
 		redirect "/"
@@ -245,7 +301,7 @@ get '/subscribe' do
 	erb :subscribe
 end
 
-# Payment stuff for subscribers
+# Payment stuff to become a subscriber
 post '/charge' do
   # Amount ($20) in cents
   @amount = 2000
@@ -262,14 +318,16 @@ post '/charge' do
     :customer    => customer.id,
   )
 
-  	current_user.pro = true
-  	current_user.save
+  #makes user a subscriber
+  current_user.pro = true
+  current_user.save
 
-  	flash[:success] = "Success: One Month Subscription Activated"
-  	redirect "/"
+  flash[:success] = "Success: One Month Subscription Activated"
+  redirect "/"
 end
 
 # Submits a chef rating
+# Weighted average calculations
 post "/chef/rating" do
 	authenticate!
 
@@ -318,6 +376,7 @@ post "/chef/rating" do
 end
 
 # Submitts an order rating
+# Weighted average calculations
 post "/order/rating" do
 	authenticate!
 
@@ -387,6 +446,7 @@ post "/new_meal/create" do
 		m.time = params["time"]
 		m.delivery_price = params["delivery_price"]
 
+		#update chefs menu items total + 1
 		temp = current_user.chef_items
 		temp = temp + 1
 		current_user.update(:chef_items => temp)

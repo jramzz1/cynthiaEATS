@@ -14,6 +14,15 @@
           <b>Made by Chef:</b> <%= @chef.username %></br>
           <b>Time to Prepare:</b> <%= @order.time %> minutes</br>
           <b>Item Price:</b> $<%= @order.price %></br></br>
+          <% if @order.delivery == true %>
+            <b>Delivery Address:</b></br>
+            <%= current_user.address %></br>
+            <%= current_user.city %>, Tx.</br></br>
+          <% else %>
+            <b>Pick-Up Address:</b></br>
+            <%= @chef.address %></br>
+            <%= @chef.city %>, Tx.</br></br>
+          <% end %>
           <b>Fees:</b></br>
           <% if @order.delivery == true %>
             Delivery Fee: $<%= @order.delivery_price %></br>

@@ -1,32 +1,10 @@
-/* remove rounding from cards, buttons and inputs */
-.card, .btn, .form-control { border-radius: 0; }
-
-body {
-background-color: #91D2AA;
-margin: 0;
-/*  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  background-size: cover;
-  -o-background-size: cover;
-
-  -webkit-background-filter: blur(5px);
-  -moz-background-filter: blur(5px);
-  -o-background-filter: blur(5px);
-  -ms-background-filter: blur(5px);
-  background-filter: blur(5px);*/
+.user_info {
+  background-image: url("/images/profileheader.png");
+  display: block; 
+  margin-left: auto; 
+  margin-right: auto; 
+  width: 100%;
 }
-
-.nav li a.active, 
-.nav li a.active:hover {
-    text-shadow: 0px 0px 5px #ccc;
-    color:#cccccc;
-}
-
-/*img {
-    max-width: 100%;
-    height: auto;
-    opacity: 0.87;
-}*/
 
 .delete-recent {
     position: relative;
@@ -35,13 +13,9 @@ margin: 0;
     text-align:right;
 }
 
-/*.single-order {
+.single-order {
   border-radius: 10px;
-  padding: 20px; 
-  width: 50%;
-  height: auto;
-  background-color: #76f7f7;
-}*/
+}
 
 .order-again {
   align-items: center;
@@ -54,13 +28,13 @@ margin: 0;
     left: 110px;
 }
 
-.pro-badge {
+/*.pro-badge {
   font-size: 10px;
   position: relative;
   bottom: 39px;
   left: 10px;
   color: #f25c05;
-}
+}*/
 
 .centered {
     position: absolute;
@@ -89,13 +63,13 @@ margin: 0;
   margin-right: auto;
 }
 
-.col-sm-4 {
+/*.col-sm-4 {
   border-radius: 10px;
   padding: 20px; 
   width: 50%;
   height: auto;
   background-color: #FFFBF6;
-}
+}*/
 
 .col-md-4 {
 /*  align-items: center;*/

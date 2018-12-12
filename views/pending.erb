@@ -16,7 +16,6 @@
 					<div class="card" style="min-width: 40rem; max-width: 40rem;">
 						<div class="card-body text-dark">
 							<label>
-	<!-- 						<div class="card-header" style="text-align: center"><b><%= o.plate_title %></b></div> -->
 								<h5 class="card-title">
 									<b><%= o.plate_title %></b>
 								</h5>
@@ -37,6 +36,11 @@
 										<% if c.id == o.user_id %>
 											<b>Customer:</b> <%= c.username %></br>
 											<b>Customer Email:</b> <%= c.email %></br>
+											<% if o.delivery %>
+												<b>Delivery Address:</b></br> 
+												<%= c.address %></br>
+												<%= c.city %>, Tx</br>
+											<% end %>
 										<% end %>
 									<% end %>
 								</p>

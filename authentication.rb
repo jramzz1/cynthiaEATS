@@ -45,6 +45,8 @@ post "/register" do
 	u.email = params["email"].downcase
 	u.password = params["password"]
 	u.username = params["username"]
+	u.address = params["address"]
+	u.city = params["city"].capitalize
 	if params["chef"] == "on"
 		u.chef = true
 	end

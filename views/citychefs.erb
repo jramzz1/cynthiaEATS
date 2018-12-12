@@ -18,6 +18,10 @@
 			<% end %>
 		</div></br>
 
+		<h2 style="font-size:20px; text-align:center">
+			Top Chefs in <%= @city %>
+		</h2>
+
 		<% @chefs.each do |c| %>
 			<% if c.chef_items != 0 %>
 				<div class="userimage">

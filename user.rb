@@ -17,6 +17,8 @@ class User
     property :username, String
     property :imgDataChef, Text, :default => "/images/users/chef.png"
     property :imgDataUser, Text, :default => "/images/users/user.png"
+    property :address, Text, :default => "123 ChefEats Heaquarters"
+    property :city, Text, :default => "Edinburg"
     property :rating1, Integer, :default => 0
     property :rating2, Integer, :default => 0
     property :rating3, Integer, :default => 0

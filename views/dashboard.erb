@@ -2,24 +2,8 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.css" media="screen,projection">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
-<!-- 
-<div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
-  <div class="carousel-inner">
-  	<% if current_user.chef %>
-	    <div class="carousel-item active">
-	      <img class="d-block w-100" src="..." alt="First slide">
-	    </div>
-	    <div class="carousel-item">
-	      <img class="d-block w-100" src="..." alt="Second slide">
-	    </div>
-	    <div class="carousel-item">
-	      <img class="d-block w-100" src="..." alt="Third slide">
-	    </div>
-	<% end %>
-  </div>
-</div> -->
 
-<div class="user_info" style="background-color: #FFF6EC; padding-top: 20px; padding-left: 20px">
+<div class="user_info" style="padding-top: 20px; padding-left: 20px">
 	<label class="userinfo">
 		<div class="userimage">
 			<% if current_user.chef %>
@@ -30,7 +14,8 @@
     	</div></br>
       	<p align="left" style="font-size:14px">
       		<b>user:</b> <%= current_user.username %></br>
-			<b>email:</b> <%= current_user.email %>
+			<b>email:</b> <%= current_user.email %></br>
+			<b>city:</b> <%= current_user.city %></br>
       	</p>
       	<form action="/save_profile" method="POST" enctype="multipart/form-data">
       		<div id="upload_button">
